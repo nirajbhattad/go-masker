@@ -49,8 +49,28 @@ func Masker(req interface{}, tag string) string {
 	return string(jsonRedaction)
 }
 
-// masker is a recursive function which takes in the input object to mask and plays with values of it's fields
-// and decides whether to mask the fields based on the input struct tag
+/*
+This Go function is designed to take in an input in the form of an interface, as well as a flag to
+either save or restore the original values, and a flag to determine whether the values should be masked.
+
+It uses the Go "reflect" package to recursively iterate through the input and its fields,
+which may be either structs or slices.
+
+The first step in the function is to check that the input is a pointer,
+and if not, the function immediately exits.
+
+It then checks if the input is a struct or a slice, and if so,
+it recursively iterates through the fields or elements of the struct or slice.
+
+If the input is not a struct or a slice, the function checks if it is a string, int or int32,
+if yes and the save flag is true, it saves the input value in the originalValues slice, and
+depending on the isRedact flag, it will either be set to a default value or not.
+If the save flag is false, it will restore the original value.
+
+The function uses a Tag variable which is used to check whether the current field should be masked or not.
+The tag is used to check for a specific metadata on the field and determine whether the field should be
+masked or not.
+*/
 func masker(req interface{}, originalValues *[]interface{}, save bool, isRedact bool) {
 	// if target is not pointer, then immediately return
 	// modifying struct's field requires addressable object
