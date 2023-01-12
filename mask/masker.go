@@ -9,21 +9,6 @@ import (
 
 var Tag string
 
-// Returns a pointer to the given input struct
-func getStructPtr(obj interface{}) interface{} {
-
-	// Check if the value is pointer
-	reqAddrValue := reflect.ValueOf(obj)
-	if reqAddrValue.Kind() == reflect.Ptr {
-		return obj
-	} else {
-		// Create a new instance of the underlying type
-		vp := reflect.New(reflect.TypeOf(obj))
-		vp.Elem().Set(reflect.ValueOf(obj))
-		return vp.Interface()
-	}
-}
-
 // Masks the input struct/interface to a json string
 func Mask(req interface{}, tag string) string {
 	if req == nil {
@@ -76,6 +61,21 @@ func MaskToXml(req interface{}, tag string) string {
 	masker(out, &originalValues, false, false)
 
 	return string(xmlRedaction)
+}
+
+// Returns a pointer to the given input struct
+func getStructPtr(obj interface{}) interface{} {
+
+	// Check if the value is pointer
+	reqAddrValue := reflect.ValueOf(obj)
+	if reqAddrValue.Kind() == reflect.Ptr {
+		return obj
+	} else {
+		// Create a new instance of the underlying type
+		vp := reflect.New(reflect.TypeOf(obj))
+		vp.Elem().Set(reflect.ValueOf(obj))
+		return vp.Interface()
+	}
 }
 
 /*
