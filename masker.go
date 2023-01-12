@@ -2,6 +2,7 @@ package masker
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"reflect"
 )
@@ -23,7 +24,8 @@ func getStructPtr(obj interface{}) interface{} {
 	}
 }
 
-func Masker(req interface{}, tag string) string {
+// Masks the input struct/interface to a json string
+func Mask(req interface{}, tag string) string {
 	if req == nil {
 		return ""
 	}
@@ -47,6 +49,33 @@ func Masker(req interface{}, tag string) string {
 	masker(out, &originalValues, false, false)
 
 	return string(jsonRedaction)
+}
+
+// Masks the input struct/interface to a xml
+func MaskToXml(req interface{}, tag string) string {
+	if req == nil {
+		return ""
+	}
+
+	// Set the input tag
+	Tag = tag
+
+	out := getStructPtr(req)
+
+	// Declare original values slice
+	originalValues := make([]interface{}, 0)
+
+	// Redact the json
+	masker(out, &originalValues, true, false)
+
+	// Create a xml redaction copy
+	var xmlRedaction []byte
+	xmlRedaction, _ = xml.Marshal(out)
+	fmt.Println(string(xmlRedaction))
+
+	masker(out, &originalValues, false, false)
+
+	return string(xmlRedaction)
 }
 
 /*
