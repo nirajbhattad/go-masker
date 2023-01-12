@@ -18,7 +18,7 @@ import "github.com/nirajbhattad/masker"
 ### Installation
 To install the library, use go get:
 ```go
-go get github.com/[username]/masker
+go get github.com/nirajbhattad/masker
 ```
 
 ### Contributing
