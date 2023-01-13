@@ -3,7 +3,6 @@ package masker
 import (
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
 	"reflect"
 )
 
@@ -29,7 +28,6 @@ func Mask(req interface{}, tag string) string {
 	// Create a json redaction copy
 	var jsonRedaction []byte
 	jsonRedaction, _ = json.Marshal(out)
-	fmt.Println(string(jsonRedaction))
 
 	masker(out, &originalValues, false, false)
 
@@ -56,7 +54,6 @@ func MaskToXml(req interface{}, tag string) string {
 	// Create a xml redaction copy
 	var xmlRedaction []byte
 	xmlRedaction, _ = xml.Marshal(out)
-	fmt.Println(string(xmlRedaction))
 
 	masker(out, &originalValues, false, false)
 
