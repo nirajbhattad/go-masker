@@ -3,26 +3,10 @@ package masker
 import (
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
 	"reflect"
 )
 
 var Tag string
-
-// Returns a pointer to the given input struct
-func getStructPtr(obj interface{}) interface{} {
-
-	// Check if the value is pointer
-	reqAddrValue := reflect.ValueOf(obj)
-	if reqAddrValue.Kind() == reflect.Ptr {
-		return obj
-	} else {
-		// Create a new instance of the underlying type
-		vp := reflect.New(reflect.TypeOf(obj))
-		vp.Elem().Set(reflect.ValueOf(obj))
-		return vp.Interface()
-	}
-}
 
 // Masks the input struct/interface to a json string
 func Mask(req interface{}, tag string) string {
@@ -44,7 +28,6 @@ func Mask(req interface{}, tag string) string {
 	// Create a json redaction copy
 	var jsonRedaction []byte
 	jsonRedaction, _ = json.Marshal(out)
-	fmt.Println(string(jsonRedaction))
 
 	masker(out, &originalValues, false, false)
 
@@ -71,11 +54,25 @@ func MaskToXml(req interface{}, tag string) string {
 	// Create a xml redaction copy
 	var xmlRedaction []byte
 	xmlRedaction, _ = xml.Marshal(out)
-	fmt.Println(string(xmlRedaction))
 
 	masker(out, &originalValues, false, false)
 
 	return string(xmlRedaction)
+}
+
+// Returns a pointer to the given input struct
+func getStructPtr(obj interface{}) interface{} {
+
+	// Check if the value is pointer
+	reqAddrValue := reflect.ValueOf(obj)
+	if reqAddrValue.Kind() == reflect.Ptr {
+		return obj
+	} else {
+		// Create a new instance of the underlying type
+		vp := reflect.New(reflect.TypeOf(obj))
+		vp.Elem().Set(reflect.ValueOf(obj))
+		return vp.Interface()
+	}
 }
 
 /*
