@@ -38,7 +38,7 @@ func TestMaskSimple(t *testing.T) {
 		AccountsPer:   12345.5678,
 	}
 
-	userRedacted := &User{
+	userMasked := &User{
 		Username:      "MaskingJson",
 		Password:      "********",
 		DbSecrets:     []string{"db_secret_1", "db_secret_2"},
@@ -50,7 +50,7 @@ func TestMaskSimple(t *testing.T) {
 		AccountsPer:   0.0,
 	}
 
-	validateJsonMasking(t, user, userRedacted)
+	validateJsonMasking(t, user, userMasked)
 }
 
 // TestMaskSimpleXml tests masking on a simple struct with xml
@@ -69,17 +69,17 @@ func TestMaskSimpleXml(t *testing.T) {
 		DbSecrets: []string{"db_secret_1", "db_secret_2"},
 	}
 
-	userRedacted := &User{
+	userMasked := &User{
 		Username:  "MaskXml",
 		Password:  "********",
 		DbSecrets: []string{"db_secret_1", "db_secret_2"},
 	}
 
-	validateXmlMasking(t, user, userRedacted)
+	validateXmlMasking(t, user, userMasked)
 }
 
 // validateJsonMasking is a helper function to validate masking functionality on a struct with json tags.
-func validateJsonMasking(t *testing.T, msg, redactedMsg interface{}) {
+func validateJsonMasking(t *testing.T, msg, maskedMsg interface{}) {
 	t.Helper()
 
 	// Get the masked string from Mask Library.
@@ -87,15 +87,15 @@ func validateJsonMasking(t *testing.T, msg, redactedMsg interface{}) {
 
 	// Compare it against the given masked representaation.
 	var b []byte
-	b, _ = json.Marshal(redactedMsg)
+	b, _ = json.Marshal(maskedMsg)
 	want := string(b)
 
 	assert.Equal(t, want, got,
-		"JSON representation mismatch after redacting fields")
+		"JSON representation mismatch after masking fields")
 }
 
 // validateXmlMasking is a helper function to validate masking functionality on a struct with xml tags.
-func validateXmlMasking(t *testing.T, msg, redactedMsg interface{}) {
+func validateXmlMasking(t *testing.T, msg, maskedMsg interface{}) {
 	t.Helper()
 
 	// Get the masked string from Mask Library.
@@ -103,9 +103,9 @@ func validateXmlMasking(t *testing.T, msg, redactedMsg interface{}) {
 
 	// Compare it against the given masked representaation.
 	var b []byte
-	b, _ = xml.Marshal(redactedMsg)
+	b, _ = xml.Marshal(maskedMsg)
 	want := string(b)
 
 	assert.Equal(t, want, got,
-		"XML representation mismatch after redacting fields")
+		"XML representation mismatch after masking fields")
 }
