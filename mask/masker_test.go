@@ -226,6 +226,154 @@ func TestMaskEmptyPointer(t *testing.T) {
 	validateJsonMasking(t, userEmpty, userEmpty)
 }
 
+// TestMaskNil tests redacting on a empty or nil input with json tags.
+func TestMaskNil(t *testing.T) {
+
+	t.Helper()
+
+	got := Mask(nil, "mask")
+
+	assert.Equal(t, "", got,
+		"JSON representation mismatch after redacting fields")
+}
+
+// TestMaskNilXml tests redacting on a empty or nil input with xml tags.
+func TestMaskNilXml(t *testing.T) {
+
+	// Simple struct
+	type User struct {
+		Username  string   `xml:"userName" mask:""`
+		Password  string   `xml:"password" mask:""`
+		DbSecrets []string `xml:"dbSecrets" mask:""`
+	}
+
+	user := &User{
+		Username:  "",
+		Password:  "Maskingpassword",
+		DbSecrets: []string{},
+	}
+
+	userMasked := &User{
+		Username:  "",
+		Password:  "********",
+		DbSecrets: []string{},
+	}
+
+	// Validate input with empty fields
+	validateXmlMasking(t, user, userMasked)
+
+	//  Validate nil input
+	validateXmlMasking(t, nil, nil)
+}
+
+// TestMaskNestedNil tests redacting on a nested complex struct with
+// some nil, empty and specified sensitive fields.
+func TestMaskNestedNil(t *testing.T) {
+	// Simple struct
+	type User struct {
+		Username  string   `json:"userName" `
+		Password  string   `json:"password" mask:""`
+		DbSecrets []string `json:"dbSecrets" mask:""`
+	}
+
+	// Nested struct
+	type Users struct {
+		Secret   string   `json:"secret" mask:""`
+		Keys     []string `json:"keys" mask:""`
+		UserInfo []User   `json:"userInfo"`
+	}
+
+	users := &Users{
+		Secret: "",
+		Keys:   nil,
+		UserInfo: []User{
+			{
+				Username:  "Masking 1",
+				Password:  "",
+				DbSecrets: []string{"Masking_db_secret_1", "Masking_db_secret_2"},
+			},
+			{
+				Username:  "Masking 2",
+				Password:  "Masking_Password",
+				DbSecrets: []string{},
+			},
+		},
+	}
+
+	userMasked := &Users{
+		Secret: "",
+		Keys:   nil,
+		UserInfo: []User{
+			{
+				Username:  "Masking 1",
+				Password:  "",
+				DbSecrets: []string{"********", "********"},
+			},
+			{
+				Username:  "Masking 2",
+				Password:  "********",
+				DbSecrets: []string{},
+			},
+		},
+	}
+
+	validateJsonMasking(t, users, userMasked)
+}
+
+// TestMaskNestedXmlNil tests redacting on a nested complex struct with
+// some nil, empty and specified sensitive fields.
+func TestMaskNestedXmlNil(t *testing.T) {
+	// Simple struct
+	type User struct {
+		Username  string   `xml:"userName" `
+		Password  string   `xml:"password" mask:""`
+		DbSecrets []string `xml:"dbSecrets" mask:""`
+	}
+
+	// Nested struct
+	type Users struct {
+		Secret   string   `xml:"secret" mask:""`
+		Keys     []string `xml:"keys" mask:""`
+		UserInfo []User   `xml:"userInfo"`
+	}
+
+	users := &Users{
+		Secret: "",
+		Keys:   nil,
+		UserInfo: []User{
+			{
+				Username:  "Masking 1",
+				Password:  "",
+				DbSecrets: []string{"Masking_db_secret_1", "Masking_db_secret_2"},
+			},
+			{
+				Username:  "Masking 2",
+				Password:  "Masking_Password",
+				DbSecrets: []string{},
+			},
+		},
+	}
+
+	userMasked := &Users{
+		Secret: "",
+		Keys:   nil,
+		UserInfo: []User{
+			{
+				Username:  "Masking 1",
+				Password:  "",
+				DbSecrets: []string{"********", "********"},
+			},
+			{
+				Username:  "Masking 2",
+				Password:  "********",
+				DbSecrets: []string{},
+			},
+		},
+	}
+
+	validateXmlMasking(t, users, userMasked)
+}
+
 // validateJsonMasking is a helper function to validate masking functionality on a struct with json tags.
 func validateJsonMasking(t *testing.T, msg, maskedMsg interface{}) {
 	t.Helper()
