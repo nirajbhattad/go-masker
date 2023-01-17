@@ -30,6 +30,12 @@ To install the library, use go get:
 go get github.com/nirajbhattad/masker
 ```
 
+### Test Cases
+To understand how it works, run the test cases written in the [test file](https://github.com/nirajbhattad/go-masker/blob/main/mask/masker_test.go) using
+```go
+go test
+```
+
 ### Contributing
 If you want to contribute to the project, please open a pull request or an issue on GitHub.
 
